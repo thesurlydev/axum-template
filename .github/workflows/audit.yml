@@ -9,7 +9,9 @@ on:
       - '**/Cargo.toml'
       - '**/Cargo.lock'
   pull_request:
-{% raw  %}
+# Raw temporarily disables tag processing. This is useful for generating content
+#  (eg, Mustache, Handlebars) which uses conflicting syntax.
+{% raw %}
 jobs:
   audit:
     runs-on: ubuntu-latest
@@ -23,4 +25,4 @@ jobs:
       - uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-{% endraw  %}
+{% endraw %}

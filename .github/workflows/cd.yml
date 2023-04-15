@@ -6,7 +6,6 @@ on:
       - '[v]?[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
-{% if crate_type == "bin" %}
   publish:
     name: Publishing for {{ "${{ matrix.job.os " }}}}
     runs-on: {{ "${{ matrix.job.os " }}}}
@@ -109,7 +108,9 @@ jobs:
             target/{{ "${{ matrix.job.target " }}}}/release/{{project-name}}-*.sha256
         env:
           GITHUB_TOKEN: {{ "${{ secrets.GITHUB_TOKEN " }}}}
-{% endif %}
+  # Raw temporarily disables tag processing. This is useful for generating content
+  #  (eg, Mustache, Handlebars) which uses conflicting syntax.
+  {% raw %}
   publish-cargo:
     name: Publishing to Cargo
     runs-on: ubuntu-latest
@@ -122,3 +123,4 @@ jobs:
       - run: cargo publish
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+  {% endraw %}
