@@ -1,0 +1,27 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+description = "{{description}}"
+authors = ["{{authors}}"]
+edition = "2021"
+license-file = "LICENSE"
+readme = "README.md"
+homepage = "https://github.com/{{github_user}}/{{project-name}}"
+repository = "https://github.com/{{github_user}}/{{project-name}}"
+keywords = ["{{project-name}}"]
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+axum = "0.6.15"
+serde = { version = "1.0", features = ["derive"] }
+serde_derive = "1"
+serde_json = "1"
+tokio = { version = "1.0", features = ["full"] }
+tracing = "0.1.37"
+tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+
+sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "postgres"] }

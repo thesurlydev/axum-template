@@ -1,0 +1,29 @@
+[placeholders.description]
+prompt = "Description for the project?"
+default = ""
+
+[placeholders.github_user]
+prompt = "GitHub user or organization?"
+default = "digitalsanctum"
+
+[placeholders.port]
+prompt = "Port for the project?"
+regex = "^[0-9]+$"
+default = "8080"
+
+[placeholders.db_url]
+prompt = "Database URL?"
+default = "postgres://postgres:postgres@localhost:5432/postgres"
+
+[placeholders.db_max_connections]
+prompt = "Maximum number of connections to the database?"
+regex = "^[0-9]+$"
+default = "10"
+
+[template]
+cargo_generate_version = ">=0.18.2"
+ignore = [
+    ".idea",
+    "target",
+    "USAGE.md"
+]
