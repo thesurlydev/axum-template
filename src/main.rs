@@ -21,7 +21,7 @@ async fn main() {
 
     // setup connection pool
     let pool = PgPoolOptions::new()
-        .max_connections({ { db_max_connections } })
+        .max_connections({{db_max_connections}})
         .acquire_timeout(Duration::from_secs(3))
         .connect(&db_connection_str)
         .await
@@ -36,7 +36,7 @@ async fn main() {
         .with_state(pool);
 
     // run it with hyper
-    let addr = SocketAddr::from(([0, 0, 0, 0], { { port } }));
+    let addr = SocketAddr::from(([0, 0, 0, 0], {{port}}));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
         .serve(app.into_make_service())
