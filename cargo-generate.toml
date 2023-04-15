@@ -1,6 +1,5 @@
 [placeholders.description]
 prompt = "Description for the project?"
-default = ""
 
 [placeholders.github_user]
 prompt = "GitHub user or organization?"
@@ -25,5 +24,6 @@ cargo_generate_version = ">=0.18.2"
 ignore = [
     ".idea",
     "target",
-    "USAGE.md"
+    "USAGE.md",
+    "generate.sh"
 ]
