@@ -25,5 +25,5 @@ ignore = [
     ".idea",
     "target",
     "USAGE.md",
-    "generate.sh"
+    "scripts/generate.sh"
 ]
