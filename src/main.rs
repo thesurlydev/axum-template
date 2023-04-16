@@ -1,14 +1,22 @@
 use axum::{
     async_trait,
     extract::{FromRef, FromRequestParts, State},
-    http::{request::Parts, StatusCode},
+    http::{request::Parts, Request, StatusCode},
     routing::get,
     Router,
 };
+
+use tower::ServiceExt;
+use tower_http::{
+    services::{ServeDir, ServeFile},
+    trace::TraceLayer,
+};
+
 use sqlx::postgres::{PgPool, PgPoolOptions};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use std::{net::SocketAddr, time::Duration};
+
 
 #[tokio::main]
 async fn main() {
@@ -35,14 +43,29 @@ async fn main() {
         )
         .with_state(pool);
 
-    // run it with hyper
+
+
+    tokio::join!(
+        serve(using_serve_dir(), 3001),
+        serve(app.into_make_service(), 8080)
+    );
+}
+
+
+fn using_serve_dir() -> Router {
+    // serve the file in the "assets" directory under `/assets`
+    Router::new().nest_service("/assets", ServeDir::new("assets"))
+}
+
+async fn serve(app: Router, port: u16) {
     let addr = SocketAddr::from(([0, 0, 0, 0], {{port}}));
     tracing::debug!("listening on {}", addr);
     axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+      .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
+      .await
+      .unwrap();
 }
+
 
 // we can extract the connection pool with `State`
 async fn using_connection_pool_extractor(

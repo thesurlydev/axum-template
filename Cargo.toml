@@ -21,6 +21,8 @@ axum = "0.6.15"
 {% if static_support %}
 # https://docs.rs/axum-extra/latest/axum_extra/
 axum-extra = "0.7.3"
+tower = { version = "0.4", features = ["util"] }
+tower-http = { version = "0.4.0", features = ["fs", "trace"] }
 {% endif %}
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1"
