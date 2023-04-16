@@ -3,8 +3,8 @@ name: CI # Continuous Integration
 on:
   push:
     branches:
-      - main
-  pull_request:
+#      - main
+#  pull_request:
 
 jobs:
 

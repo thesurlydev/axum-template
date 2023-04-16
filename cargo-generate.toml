@@ -19,6 +19,14 @@ prompt = "Maximum number of connections to the database?"
 regex = "^[0-9]+$"
 default = "10"
 
+[placeholders.static_support]
+type = "bool"
+prompt = "Do you want to support static files?"
+default = false
+
+[conditional.'static_support == false'.placeholders]
+exclude = ["assets"]
+
 [template]
 cargo_generate_version = ">=0.18.2"
 ignore = [
