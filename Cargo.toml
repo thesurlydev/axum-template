@@ -18,7 +18,7 @@ maintenance = { status = "actively-developed" }
 
 [dependencies]
 axum = "0.6.15"
-{% if support_static %}
+{% if static_support %}
 # https://docs.rs/axum-extra/latest/axum_extra/
 axum-extra = "0.6.15"
 {% endif %}

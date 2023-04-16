@@ -24,8 +24,8 @@ type = "bool"
 prompt = "Do you want to support static files?"
 default = false
 
-[conditional.'static_support == false'.placeholders]
-exclude = ["assets"]
+[conditional.'static_support == false']
+ignore = [ "assets" ]
 
 [template]
 cargo_generate_version = ">=0.18.2"
