@@ -20,7 +20,7 @@ maintenance = { status = "actively-developed" }
 axum = "0.6.15"
 {% if static_support %}
 # https://docs.rs/axum-extra/latest/axum_extra/
-axum-extra = "0.6.15"
+axum-extra = "0.7.3"
 {% endif %}
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1"
