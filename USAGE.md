@@ -16,6 +16,23 @@ Otherwise, you can generate a new project directly from GitHub:
 cargo generate --git digitalsanctum/axum-template --name new-project-name
 ```
 
+## Favorite
+
+Add the following to `$CARGO_HOME` to make generating a new project easier:
+```toml
+[favorites.axum]
+path = "/path/to/axum-template"
+vcs = "None"
+init = false
+overwrite = true
+```
+
+```shell
+cargo generate axum --name new-project-name
+```
+
+Read more about favorites [here](https://cargo-generate.github.io/cargo-generate/favorites.html).
+
 ## Companion Script
 
 A companion script, [scripts/generate.sh](scripts/generate.sh), is provided to make generating a new project easier. 
