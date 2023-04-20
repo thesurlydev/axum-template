@@ -1,14 +1,13 @@
 use axum::{
     async_trait,
     extract::{FromRef, FromRequestParts, State},
-    http::{request::Parts, Request, StatusCode},
+    http::{request::Parts, StatusCode},
     routing::get,
     Router,
 };
 
-use tower::ServiceExt;
 use tower_http::{
-    services::{ServeDir, ServeFile},
+    services::{ServeDir},
     trace::TraceLayer,
 };
 
@@ -16,6 +15,7 @@ use sqlx::postgres::{PgPool, PgPoolOptions};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use std::{net::SocketAddr, time::Duration};
+use tokio::signal;
 
 
 #[tokio::main]
@@ -46,8 +46,8 @@ async fn main() {
 
 
     tokio::join!(
-        serve(using_serve_dir(), 3001),
-        serve(app.into_make_service(), 8080)
+        // serve(using_serve_dir(), 3001),
+        serve(app, {{port}})
     );
 }
 
@@ -58,8 +58,9 @@ fn using_serve_dir() -> Router {
 }
 
 async fn serve(app: Router, port: u16) {
-    let addr = SocketAddr::from(([0, 0, 0, 0], {{port}}));
-    tracing::debug!("listening on {}", addr);
+    let addr_str = format!("[::]:{}", port);
+    tracing::info!("listening on {}", addr_str);
+    let addr = addr_str.parse::<SocketAddr>().expect("invalid address");
     axum::Server::bind(&addr)
       .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
       .with_graceful_shutdown(shutdown_signal())

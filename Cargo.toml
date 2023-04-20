@@ -1,9 +1,11 @@
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [package]
 name = "{{project-name}}"
 version = "0.1.0"
 description = "{{description}}"
 authors = ["{{authors}}"]
 edition = "2021"
+rust-version = "1.68"
 license-file = "LICENSE"
 readme = "README.md"
 documentation = "https://github.com/{{github_user}}/{{project-name}}"
@@ -14,7 +16,9 @@ keywords = ["{{project-name}}"]
 [badges]
 maintenance = { status = "actively-developed" }
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]]
+name = "{{project-name}}
+path = "src/main.rs"
 
 [dependencies]
 axum = "0.6.15"

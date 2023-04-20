@@ -4,7 +4,8 @@ services:
   svc:
     build: .
     ports:
-      - "8080:8080"
+      - "{{port}}:{{port}}"
+      - "3001:3001"
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     depends_on:

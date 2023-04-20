@@ -1,28 +1,44 @@
+#
+# Prompts
+#
+
 [placeholders.description]
-prompt = "Description for the project?"
+prompt = "Description for the project:"
 
 [placeholders.github_user]
 prompt = "GitHub user or organization?"
 default = "digitalsanctum"
 
 [placeholders.port]
-prompt = "Port for the project?"
+prompt = "Port for the app?"
 regex = "^[0-9]+$"
 default = "8080"
 
-[placeholders.db_url]
-prompt = "Database URL?"
-default = "postgres://postgres:postgres@localhost:5432/postgres"
-
-[placeholders.db_max_connections]
-prompt = "Maximum number of connections to the database?"
-regex = "^[0-9]+$"
-default = "10"
+[placeholders.db_support]
+prompt = "Do you need a database?"
+type = "bool"
+default = false
 
 [placeholders.static_support]
 type = "bool"
 prompt = "Do you want to support static files?"
 default = false
+
+[placeholders.deploy]
+prompt = "Where do you want to deploy?"
+choices = [ "fly.io", "aws" ]
+default = "fly.io"
+
+#
+# Conditionals
+#
+
+[conditional.'db_support == true']
+db_url = { type = "string", prompt = "Database URL?", default = "postgres://postgres:postgres@localhost:5432/postgres" }
+db_max_connections = { prompt = "Maximum number of connections to the database?", regex = "^[0-9]+$", default = "10" }
+
+[conditional.'static_support == true']
+static_assets_port = { prompt = "Port for static assets?", regex = "^[0-9]+$", default = "3000" }
 
 [conditional.'static_support == false']
 ignore = [ "assets" ]
@@ -35,3 +51,40 @@ ignore = [
     "USAGE.md",
     "scripts"
 ]
+
+#
+# Built-in placeholders
+#
+#The current supported builtin placeholders are:
+#
+#{{authors}}
+#
+#this will be filled in by a function borrowed from Cargo's source code, that determines your information from Cargo's configuration. It will either be on the form username <email> or just plain username.
+#
+#{{project-name}}
+#
+#this is supplied by either passing the --name flag to the command or working with the interactive CLI to supply a name.
+#
+#{{crate_name}}
+#
+#the snake_case_version of project-name
+#
+#{{crate_type}}
+#
+#this is supplied by either passing the --bin or --lib flag to the command line, contains either bin or lib, --bin is the default
+#
+#{{os-arch}}
+#
+#contains the current operating system and architecture ex: linux-x86_64
+#
+#{{username}}
+#
+#this will be filled in by a function borrowed from Cargo's source code, that determines your information from Cargo's configuration.
+#
+#{{within_cargo_project}}
+#
+#A boolean with the value true if the template is being expanded inside a Cargo project. It's a simple matter of whether Cargo.toml is present in any parent folder.
+#
+#{{is_init}}
+#
+#A boolean that reflects the value of the --init parameter of cargo-generate.

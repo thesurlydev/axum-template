@@ -7,8 +7,10 @@ WORKDIR /usr/src/app
 # Copy the source code into the container
 COPY . .
 
+RUN ls -la .
+
 # Build the release version of the microservice
-RUN cargo build --release
+RUN cargo build --release --bin microservice
 
 # Stage 2: Serve
 FROM debian:buster-slim
@@ -35,7 +37,7 @@ RUN chown appuser:appuser ./microservice && \
 USER appuser
 
 # Expose the port the app runs on
-EXPOSE 8080
+EXPOSE {{port}}
 
 # Start the application
 CMD ["./microservice"]
