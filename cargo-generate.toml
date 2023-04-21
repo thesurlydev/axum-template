@@ -33,14 +33,14 @@ default = "fly.io"
 # Conditionals
 #
 
-[conditional.'db_support == true']
+[conditional.'db_support == true'.placeholders]
 db_url = { type = "string", prompt = "Database URL?", default = "postgres://postgres:postgres@localhost:5432/postgres" }
 db_max_connections = { prompt = "Maximum number of connections to the database?", regex = "^[0-9]+$", default = "10" }
 
 [conditional.'db_support == false']
 ignore = [ "src/db" ]
 
-[conditional.'static_support == true']
+[conditional.'static_support == true'.placeholders]
 static_assets_port = { prompt = "Port for static assets?", regex = "^[0-9]+$", default = "3000" }
 
 [conditional.'static_support == false']

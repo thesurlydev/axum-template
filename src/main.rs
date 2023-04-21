@@ -5,7 +5,8 @@ use axum::{
 };
 
 {% if static_support %}
-mod static_support
+mod static_support;
+use static_support::using_serve_dir;
 {% endif %}
 
 use tower_http::trace::TraceLayer;
@@ -40,7 +41,9 @@ async fn main() {
 
 
   tokio::join!(
-        // serve(using_serve_dir(), 3001),
+        {% if static_support %}
+        serve(using_serve_dir(), {{static_assets_port}}),
+        {% endif %}
         serve(app, {{port}})
     );
 }

@@ -5,7 +5,10 @@ services:
     build: .
     ports:
       - "{{port}}:{{port}}"
-      - "3001:3001"
+{% if static_support %}
+      - "{{static_assets_port}}:{{static_assets_port}}"
+{% endif %}
+{% if db_support %}
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     depends_on:
@@ -23,3 +26,4 @@ services:
 
 volumes:
   pgdata:
+{% endif %}
