@@ -17,7 +17,7 @@ keywords = ["{{project-name}}"]
 maintenance = { status = "actively-developed" }
 
 [[bin]]
-name = "{{project-name}}
+name = "{{project-name}}"
 path = "src/main.rs"
 
 [dependencies]
@@ -25,9 +25,9 @@ axum = "0.6.15"
 {% if static_support %}
 # https://docs.rs/axum-extra/latest/axum_extra/
 axum-extra = "0.7.3"
+{% endif %}
 tower = { version = "0.4", features = ["util"] }
 tower-http = { version = "0.4.0", features = ["fs", "trace"] }
-{% endif %}
 serde = { version = "1.0", features = ["derive"] }
 serde_derive = "1"
 serde_json = "1"
@@ -35,4 +35,6 @@ tokio = { version = "1.0", features = ["full"] }
 tracing = "0.1.37"
 tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
 
+{% if db_support %}
 sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "postgres"] }
+{% endif %}
