@@ -2,8 +2,8 @@ name: Build Template
 on:
   # https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch
   workflow_dispatch:
-  schedule:
-    - cron: '0 18 * * 5'
+  #schedule:
+  #  - cron: '0 18 * * 5'
   push:
     branches: [ '*' ]
     paths-ignore:
