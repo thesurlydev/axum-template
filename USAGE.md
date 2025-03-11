@@ -13,7 +13,7 @@ where `axum-template` is the path to this template and `new-project-name` is the
 Otherwise, you can generate a new project directly from GitHub:
 
 ```shell
-cargo generate --git digitalsanctum/axum-template --name new-project-name
+cargo generate --git thesurlydev/axum-template --name new-project-name
 ```
 
 ## Favorite

@@ -1,8 +1,9 @@
 use axum::{
-  http::StatusCode,
   routing::get,
   Router,
 };
+
+use tokio::net::TcpListener;
 
 {% if static_support %}
 mod static_support;
@@ -13,7 +14,6 @@ use tower_http::trace::TraceLayer;
 
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use std::net::SocketAddr;
 use tokio::signal;
 
 {% if db_support %}
@@ -55,12 +55,11 @@ async fn handler() -> &'static str {
 async fn serve(app: Router, port: u16) {
   let addr_str = format!("[::]:{}", port);
   tracing::info!("listening on {}", addr_str);
-  let addr = addr_str.parse::<SocketAddr>().expect("invalid address");
-  axum::Server::bind(&addr)
-    .serve(app.layer(TraceLayer::new_for_http()).into_make_service())
-    .with_graceful_shutdown(shutdown_signal())
-    .await
-    .unwrap();
+  let listener = TcpListener::bind(addr_str.as_str()).await.expect("failed to bind");
+  axum::serve(listener, app.layer(TraceLayer::new_for_http()).into_make_service())
+      .with_graceful_shutdown(shutdown_signal())
+      .await
+      .unwrap();
 }
 
 // graceful shutdown
@@ -88,14 +87,4 @@ async fn shutdown_signal() {
     }
 
   println!("signal received, starting graceful shutdown");
-}
-
-
-/// Utility function for mapping any error into a `500 Internal Server Error`
-/// response.
-fn internal_error<E>(err: E) -> (StatusCode, String)
-  where
-    E: std::error::Error,
-{
-  (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
 }

@@ -4,8 +4,8 @@ name = "{{project-name}}"
 version = "0.1.0"
 description = "{{description}}"
 authors = ["{{authors}}"]
-edition = "2021"
-rust-version = "1.68"
+edition = "2024"
+rust-version = "1.85"
 license-file = "LICENSE"
 readme = "README.md"
 documentation = "https://github.com/{{github_user}}/{{project-name}}"
@@ -21,20 +21,20 @@ name = "{{project-name}}"
 path = "src/main.rs"
 
 [dependencies]
-axum = "0.6.15"
+axum = "0.8.1"
 {% if static_support %}
 # https://docs.rs/axum-extra/latest/axum_extra/
-axum-extra = "0.7.3"
+axum-extra = "0.10.0"
 {% endif %}
-tower = { version = "0.4", features = ["util"] }
-tower-http = { version = "0.4.0", features = ["fs", "trace"] }
-serde = { version = "1.0", features = ["derive"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "0.6.0", features = ["fs", "trace"] }
+serde = { version = "1", features = ["derive"] }
 serde_derive = "1"
 serde_json = "1"
-tokio = { version = "1.0", features = ["full"] }
-tracing = "0.1.37"
-tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+tokio = { version = "1", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
 {% if db_support %}
-sqlx = { version = "0.6.3", features = ["runtime-tokio-rustls", "any", "postgres"] }
+sqlx = { version = "0.8.3", features = ["runtime-tokio-rustls", "any", "postgres"] }
 {% endif %}
