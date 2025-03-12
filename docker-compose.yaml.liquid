@@ -3,6 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Explicitly set platform for mixed architecture environments
+      args:
+        - BUILDPLATFORM=linux/arm64
+    platform: linux/arm64
     ports:
       - "{{port}}:{{port}}"
 {% if static_support %}
@@ -11,8 +15,10 @@ services:
 {% if db_support %}
     environment:
       - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
+      - RUST_LOG=debug
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:17
@@ -25,6 +31,11 @@ services:
       - POSTGRES_DB=postgres
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:
