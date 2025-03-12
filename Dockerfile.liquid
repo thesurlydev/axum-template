@@ -14,19 +14,10 @@ RUN mkdir -p .cargo
 RUN echo '[target.aarch64-unknown-linux-musl]\nlinker = "aarch64-linux-gnu-gcc"' > .cargo/config.toml
 
 # Copy the source code into the container
-COPY Cargo.toml Cargo.lock* ./
-
-# Create a dummy main.rs to build dependencies
-RUN mkdir -p src && \
-echo "fn main() {}" > src/main.rs && \
-cargo build --target aarch64-unknown-linux-musl --release && \
-rm -rf src/
-
-# Now copy the actual source code
 COPY . .
 
-# Build the release version of {{project-name}}
-RUN cargo build --target aarch64-unknown-linux-musl --release
+# Build the release version
+RUN cargo build --target aarch64-unknown-linux-musl --release --all-features
 
 # Stage 2: Runtime
 FROM alpine:3.19
@@ -40,8 +31,13 @@ RUN adduser -D appuser
 # Set the working directory
 WORKDIR /app
 
-# Copy the binary from the builder stage - note the path correction
+# Copy the binary from the builder stage
 COPY --from=builder /usr/src/app/target/aarch64-unknown-linux-musl/release/{{project-name}} ./{{project-name}}
+
+{% if static_assets_dir %}
+    # Copy static assets
+    COPY {{ static_assets_dir }} ./assets/
+{% endif %}
 
 # Set the ownership and permissions
 RUN chown appuser:appuser ./{{project-name}} && \

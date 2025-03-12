@@ -3,6 +3,7 @@ GITHUB_USER := "thesurlydev"
 NAME := "test"
 PORT := "8080"
 STATIC_PORT := "3000"
+STATIC_ASSETS_DIR := "assets"
 DB_URL := "postgres://postgres:postgres@localhost:5432/postgres"
 DESCRIPTION := "foo"
 DESTINATION := "../"
@@ -24,6 +25,7 @@ generate: clean
     -d db_url={{DB_URL}} \
     -d static_support=true \
     -d static_assets_port={{STATIC_PORT}} \
+    -d static_assets_dir={{STATIC_ASSETS_DIR}} \
     --destination={{DESTINATION}} \
     -o --verbose
 
@@ -33,4 +35,4 @@ build: generate
 
 # Run the generated project
 run: generate
-  cd {{DESTINATION}}{{NAME}} && podman compose up --build
+  cd {{DESTINATION}}{{NAME}} && docker compose up --build

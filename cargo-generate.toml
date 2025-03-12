@@ -36,6 +36,7 @@ ignore = [ "src/db" ]
 
 [conditional.'static_support == true'.placeholders]
 static_assets_port = { prompt = "Port for static assets?", regex = "^[0-9]+$", default = "3000" }
+static_assets_dir = { prompt = "Directory for static assets?", default = "assets" }
 
 [conditional.'static_support == false']
 ignore = [ "assets", "src/static_support" ]
