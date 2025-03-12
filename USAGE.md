@@ -33,11 +33,6 @@ cargo generate axum --name new-project-name
 
 Read more about favorites [here](https://cargo-generate.github.io/cargo-generate/favorites.html).
 
-## Companion Script
-
-A companion script, [scripts/generate.sh](scripts/generate.sh), is provided to make generating a new project easier. 
-
-
 ## References
 
 - [Cargo Generate Documentation](https://cargo-generate.github.io/cargo-generate/)
