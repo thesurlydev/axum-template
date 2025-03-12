@@ -1,1 +1,1 @@
-mod postgres;
+pub(crate) mod postgres;

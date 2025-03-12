@@ -1,0 +1,57 @@
+# Stage 1: Build
+FROM rust:1.85 as builder
+
+# Install cross-compilation dependencies
+RUN apt-get update && \
+apt-get install -y musl-tools gcc-aarch64-linux-gnu && \
+rustup target add aarch64-unknown-linux-musl
+
+# Set the working directory
+WORKDIR /usr/src/app
+
+# Create .cargo/config.toml for cross-compilation
+RUN mkdir -p .cargo
+RUN echo '[target.aarch64-unknown-linux-musl]\nlinker = "aarch64-linux-gnu-gcc"' > .cargo/config.toml
+
+# Copy the source code into the container
+COPY Cargo.toml Cargo.lock* ./
+
+# Create a dummy main.rs to build dependencies
+RUN mkdir -p src && \
+echo "fn main() {}" > src/main.rs && \
+cargo build --target aarch64-unknown-linux-musl --release && \
+rm -rf src/
+
+# Now copy the actual source code
+COPY . .
+
+# Build the release version of {{project-name}}
+RUN cargo build --target aarch64-unknown-linux-musl --release
+
+# Stage 2: Runtime
+FROM alpine:3.19
+
+# Install minimal dependencies for a static binary
+RUN apk --no-cache add ca-certificates
+
+# Create a non-root user
+RUN adduser -D appuser
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the binary from the builder stage - note the path correction
+COPY --from=builder /usr/src/app/target/aarch64-unknown-linux-musl/release/{{project-name}} ./{{project-name}}
+
+# Set the ownership and permissions
+RUN chown appuser:appuser ./{{project-name}} && \
+chmod 755 ./{{project-name}}
+
+# Switch to the non-root user
+USER appuser
+
+# Expose the port
+EXPOSE 8080
+
+# Start the application
+CMD ["./{{project-name}}"]

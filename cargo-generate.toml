@@ -20,14 +20,9 @@ type = "bool"
 default = false
 
 [placeholders.static_support]
-type = "bool"
 prompt = "Do you want to support static files?"
+type = "bool"
 default = false
-
-[placeholders.deploy]
-prompt = "Where do you want to deploy?"
-choices = [ "fly.io", "aws (not supported yet)" ]
-default = "fly.io"
 
 #
 # Conditionals
@@ -35,7 +30,6 @@ default = "fly.io"
 
 [conditional.'db_support == true'.placeholders]
 db_url = { type = "string", prompt = "Database URL?", default = "postgres://postgres:postgres@localhost:5432/postgres" }
-db_max_connections = { prompt = "Maximum number of connections to the database?", regex = "^[0-9]+$", default = "10" }
 
 [conditional.'db_support == false']
 ignore = [ "src/db" ]
@@ -44,13 +38,12 @@ ignore = [ "src/db" ]
 static_assets_port = { prompt = "Port for static assets?", regex = "^[0-9]+$", default = "3000" }
 
 [conditional.'static_support == false']
-ignore = [ "assets" ]
+ignore = [ "assets", "src/static_support" ]
 
 [template]
-cargo_generate_version = ">=0.18.2"
+cargo_generate_version = ">=0.22.1"
 ignore = [
     ".idea",
-    "target",
     "USAGE.md",
     "scripts"
 ]
