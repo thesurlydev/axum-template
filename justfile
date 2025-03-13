@@ -7,6 +7,7 @@ STATIC_ASSETS_DIR := "assets"
 DB_URL := "postgres://postgres:postgres@localhost:5432/postgres"
 DESCRIPTION := "foo"
 DESTINATION := "../"
+CONTAINER_RUNTIME := "podman"
 
 # Clean up the generated project
 clean:
@@ -21,6 +22,7 @@ generate: clean
     -d github_user={{ GITHUB_USER }} \
     -d description={{DESCRIPTION}} \
     -d port={{PORT}} \
+    -d github_support=true \
     -d db_support=true \
     -d db_url={{DB_URL}} \
     -d static_support=true \
@@ -35,4 +37,4 @@ build: generate
 
 # Run the generated project
 run: generate
-  cd {{DESTINATION}}{{NAME}} && docker compose up --build
+  cd {{DESTINATION}}{{NAME}} && {{CONTAINER_RUNTIME}} compose up --build

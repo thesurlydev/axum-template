@@ -24,6 +24,11 @@ prompt = "Do you want to support static files?"
 type = "bool"
 default = false
 
+[placeholders.github_support]
+prompt = "Do you want to enable GitHub support?"
+type = "bool"
+default = true
+
 #
 # Conditionals
 #
@@ -33,6 +38,9 @@ db_url = { type = "string", prompt = "Database URL?", default = "postgres://post
 
 [conditional.'db_support == false']
 ignore = [ "src/db" ]
+
+[conditional.'github_support == false']
+ignore = [ ".github" ]
 
 [conditional.'static_support == true'.placeholders]
 static_assets_port = { prompt = "Port for static assets?", regex = "^[0-9]+$", default = "3000" }
@@ -45,7 +53,6 @@ ignore = [ "assets", "src/static_support" ]
 cargo_generate_version = ">=0.22.1"
 ignore = [
     ".idea",
-    "justfile",
     "USAGE.md",
     "scripts"
 ]
