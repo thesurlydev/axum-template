@@ -21,7 +21,7 @@ services:
         condition: service_healthy
 
   db:
-    image: postgres:17
+    image: postgres:18
     restart: always
     ports:
       - "5432:5432"

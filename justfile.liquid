@@ -9,4 +9,8 @@ build:
 
 # Run the project
 run: build
-  podman compose up --build
+  cargo run
+
+# Build container image
+image:
+  docker build -t {{project-name}} .

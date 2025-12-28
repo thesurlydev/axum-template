@@ -5,7 +5,7 @@ version = "0.1.0"
 description = "{{description}}"
 authors = ["{{authors}}"]
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.92"
 license-file = "LICENSE"
 readme = "README.md"
 documentation = "https://github.com/{{github_user}}/{{project-name}}"
@@ -24,7 +24,7 @@ path = "src/main.rs"
 axum = "0.8"
 {% if static_support %}
 # https://docs.rs/axum-extra/latest/axum_extra/
-axum-extra = "0.10"
+axum-extra = "0.12.5"
 {% endif %}
 tower = { version = "0.5", features = ["util"] }
 tower-http = { version = "0.6", features = ["fs", "trace"] }

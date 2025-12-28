@@ -15,19 +15,24 @@ regex = "^[0-9]+$"
 default = "8080"
 
 [placeholders.db_support]
-prompt = "Do you need a database?"
+prompt = "Add support for PostgreSQL database?"
 type = "bool"
 default = false
 
 [placeholders.static_support]
-prompt = "Do you want to support static files?"
+prompt = "Add support for static files?"
 type = "bool"
 default = false
 
 [placeholders.github_support]
-prompt = "Do you want to enable GitHub support?"
+prompt = "Enable GitHub support?"
 type = "bool"
 default = true
+
+[placeholders.container_support]
+prompt = "Enable container support?"
+type = "bool"
+default = false
 
 #
 # Conditionals
@@ -35,6 +40,9 @@ default = true
 
 [conditional.'db_support == true'.placeholders]
 db_url = { type = "string", prompt = "Database URL?", default = "postgres://postgres:postgres@localhost:5432/postgres" }
+
+[conditional.'container_support == false']
+ignore = [ "Dockerfile", "docker-compose.yaml" ]
 
 [conditional.'db_support == false']
 ignore = [ "src/db" ]
@@ -52,6 +60,7 @@ ignore = [ "assets", "src/static_support" ]
 [template]
 cargo_generate_version = ">=0.22.1"
 ignore = [
+    ".DS_Store",
     ".idea",
     "USAGE.md",
     "scripts"

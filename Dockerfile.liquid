@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM rust:1.85 as builder
+FROM rust:1.92 as builder
 
 # Install cross-compilation dependencies
 RUN apt-get update && \
@@ -20,7 +20,7 @@ COPY . .
 RUN cargo build --target aarch64-unknown-linux-musl --release --all-features
 
 # Stage 2: Runtime
-FROM alpine:3.19
+FROM alpine:3
 
 # Install minimal dependencies for a static binary
 RUN apk --no-cache add ca-certificates
