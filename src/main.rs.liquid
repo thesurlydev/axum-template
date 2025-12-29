@@ -1,92 +1,54 @@
-use axum::{
-    routing::get,
-    Router,
-};
+use tracing::info;
 
-use tokio::net::TcpListener;
-use tower_http::trace::TraceLayer;
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use tokio::signal;
-{% if db_support %}
-mod db;
-use sqlx::postgres::PgPoolOptions;
-use std::time::Duration;
-{% endif %}
-{% if static_support %}
-mod static_support;
-use static_support::using_serve_dir;
-{% endif %}
+use {{crate_name}}::app::create_router;
+use {{crate_name}}::common::bootstrap::{build_app_state, shutdown_signal};
+use {{crate_name}}::common::config::{Config, setup_database};
+
+#[cfg(not(feature = "opentelemetry"))]
+use {{crate_name}}::common::bootstrap::setup_tracing;
+
+#[cfg(feature = "opentelemetry")]
+use {{crate_name}}::common::opentelemetry::{setup_tracing_opentelemetry, shutdown_opentelemetry};
+
+/// Main entry point for the application.
+/// It sets up the database connection, initializes the server, and starts listening for requests.
+/// It also sets up the Swagger UI for API documentation.
+///
+/// # Errors
+/// Returns an error if the database connection fails or if the server fails to start.
+/// # Panics
+/// Panics if the environment variables are not set correctly or if the server fails to start.
 #[tokio::main]
-async fn main() {
-    println!("reached main");
-    tracing_subscriber::registry()
-            .with(tracing_subscriber::fmt::layer())
-            .init();
-    {% if db_support %}
-    let db_connection_str = std::env::var("DATABASE_URL")
-            .unwrap_or_else(|_| "postgres://postgres:postgres@localhost:5432/postgres".to_string());
-    tracing::info!("connecting to database: {}", db_connection_str);
-    let pool = PgPoolOptions::new()
-            .max_connections(10)
-            .acquire_timeout(Duration::from_secs(3))
-            .connect(&db_connection_str)
-            .await
-            .expect("can't connect to database");
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    #[cfg(not(feature = "opentelemetry"))]
+    setup_tracing();
 
-    let app = Router::new()
-            .route("/", get(db::postgres::using_connection_pool_extractor).post(db::postgres::using_connection_pool_extractor))
-            .with_state(pool);
-    {% else %}
-    let app = Router::new()
-            .route("/", get(handler));
-    {% endif %}
-    tokio::join!(
-        {% if static_support %}
-        serve(using_serve_dir(), {{static_assets_port}}),
-        {% endif %}
-        serve(app, {{port}})
-    );
-}
-
-{% unless db_support %}
-async fn handler() -> &'static str {
-    "Hello, world!"
-}
-{% endunless %}
-
-async fn serve(app: Router, port: u16) {
-    let addr_str = format!("[::]:{}", port);
-    tracing::info!("listening on {}", addr_str);
-    let listener = TcpListener::bind(addr_str.as_str()).await.expect("failed to bind");
-    axum::serve(listener, app.layer(TraceLayer::new_for_http()).into_make_service())
-            .with_graceful_shutdown(shutdown_signal())
-            .await
-            .unwrap();
-}
-
-// graceful shutdown
-async fn shutdown_signal() {
-    let ctrl_c = async {
-        signal::ctrl_c()
-                .await
-                .expect("failed to install Ctrl+C handler");
+    #[cfg(feature = "opentelemetry")]
+    let opentelemetry_tracer_provider = {
+        let provider = setup_tracing_opentelemetry();
+        // Startup span to ensure at least one span is generated and exported
+        let span = tracing::info_span!("startup");
+        let _enter = span.enter();
+        provider
     };
 
-    #[cfg(unix)]
-    let terminate = async {
-        signal::unix::signal(signal::unix::SignalKind::terminate())
-                .expect("failed to install signal handler")
-                .recv()
-                .await;
-    };
+    let config = Config::from_env().expect("failed to load config");
+    let pool = setup_database(&config).await?;
+    let state = build_app_state(pool, config.clone());
+    let app = create_router(state);
 
-    #[cfg(not(unix))]
-    let terminate = std::future::pending::<()>();
+    let addr = format!("{}:{}", config.service_host, config.service_port);
 
-    tokio::select! {
-        _ = ctrl_c => {},
-        _ = terminate => {},
-    }
+    info!("Server running at {addr}");
 
-    println!("signal received, starting graceful shutdown");
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
+
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await?;
+
+    #[cfg(feature = "opentelemetry")]
+    shutdown_opentelemetry(opentelemetry_tracer_provider)?;
+
+    Ok(())
 }

@@ -15,52 +15,33 @@ regex = "^[0-9]+$"
 default = "8080"
 
 [placeholders.db_support]
-prompt = "Add support for PostgreSQL database?"
+prompt = "Enable database support?"
 type = "bool"
-default = false
+default = true
 
-[placeholders.static_support]
-prompt = "Add support for static files?"
-type = "bool"
-default = false
+[conditional.'db_support == true'.placeholders]
+db_url = { prompt = "Database URL?", default = "postgres://postgres:postgres@localhost:5432/postgres" }
 
 [placeholders.github_support]
 prompt = "Enable GitHub support?"
 type = "bool"
 default = true
 
-[placeholders.container_support]
-prompt = "Enable container support?"
-type = "bool"
-default = false
 
 #
 # Conditionals
 #
 
-[conditional.'db_support == true'.placeholders]
-db_url = { type = "string", prompt = "Database URL?", default = "postgres://postgres:postgres@localhost:5432/postgres" }
-
-[conditional.'container_support == false']
-ignore = [ "Dockerfile", "docker-compose.yaml" ]
-
-[conditional.'db_support == false']
-ignore = [ "src/db" ]
-
 [conditional.'github_support == false']
 ignore = [ ".github" ]
 
-[conditional.'static_support == true'.placeholders]
-static_assets_port = { prompt = "Port for static assets?", regex = "^[0-9]+$", default = "3000" }
-static_assets_dir = { prompt = "Directory for static assets?", default = "assets" }
-
-[conditional.'static_support == false']
-ignore = [ "assets", "src/static_support" ]
-
 [template]
-cargo_generate_version = ">=0.22.1"
+cargo_generate_version = ">=0.23.7"
 ignore = [
     ".DS_Store",
+    "src/.DS_Store",
+    "src/domain/.DS_Store",
+    "/**/.DS_Store",
     ".idea",
     "USAGE.md",
     "scripts"
